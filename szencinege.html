@@ -307,24 +307,19 @@ sp.x+=sp.vx;sp.flyT+=.04;sp.y=sp.startY+Math.sin(sp.flyT)*40;
 if(Math.abs(sp.x-sp.startX)>sp.patrol)sp.vx*=-1;
 sp.wt++;if(sp.wt%6===0)sp.wf=(sp.wf+1)%3;
 
-// Hitbox - csőr (beak) based collision
-// Player beak is at front: face=1 -> right side, face=-1 -> left side
-const beakX=P.face>0?P.x+P.w:P.x;
-const beakY=P.y+P.h*0.3; // head height
-// Sparrow body hitbox (smaller than visual)
-const spHB={x:sp.x+10,y:sp.y+8,w:sp.w-20,h:sp.h-12};
-
+// Sparrow hitbox
+const spHB={x:sp.x+8,y:sp.y+6,w:sp.w-16,h:sp.h-10};
+const overlap=P.x+P.w>spHB.x&&P.x<spHB.x+spHB.w&&P.y+P.h>spHB.y&&P.y<spHB.y+spHB.h;
+if(!overlap){/* no hit */}
 // Stomp from above
-if(P.x+P.w>spHB.x&&P.x<spHB.x+spHB.w&&P.y+P.h>spHB.y&&P.y+P.h<spHB.y+spHB.h/2+10&&P.vy>0){
+else if(P.vy>0&&P.y+P.h<spHB.y+spHB.h*0.6){
 killE(sp,'stomp');P.vy=JFORCE*.6}
-// Front beak attack - must be going TOWARDS the sparrow fast enough
-else if(Math.abs(P.vx)>2&&
-((P.face>0&&P.x+P.w>spHB.x&&P.x+P.w<spHB.x+spHB.w/2)||
-(P.face<0&&P.x<spHB.x+spHB.w&&P.x>spHB.x+spHB.w/2))&&
-beakY>spHB.y&&beakY<spHB.y+spHB.h){
-killE(sp,'stomp');P.vx*=.5}
-// Sparrow damages player from behind/below/above (NOT head-on front)
-else if(P.inv<=0&&P.x+P.w-15>spHB.x&&P.x+15<spHB.x+spHB.w&&P.y+P.h-10>spHB.y&&P.y+10<spHB.y+spHB.h){
+// Front attack: facing sparrow & moving towards it (loose - any forward speed)
+else if((P.face>0&&P.vx>0.3&&P.x+P.w<spHB.x+spHB.w*0.75)||
+(P.face<0&&P.vx<-0.3&&P.x>spHB.x+spHB.w*0.25)){
+killE(sp,'stomp');P.vx*=.3}
+// Otherwise sparrow hurts us
+else if(P.inv<=0){
 playerHit()}});
 
 // Humans
