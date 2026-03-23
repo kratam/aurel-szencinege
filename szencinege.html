@@ -312,9 +312,10 @@ if(dist<450&&hu.shootT>=hu.shootCd&&!hu.isAim){hu.isAim=true;hu.aimT=30}
 if(hu.isAim){hu.aimT--;hu.vx=0;
 if(hu.aimT<=0){
 const a=Math.atan2(P.y+P.h/2-hu.y-20,P.x+P.w/2-hu.x);
-// Lő felfelé is - minimum szög
-const minAngle=Math.min(a,-0.3);
-bullets.push({x:hu.x+hu.w/2,y:hu.y+15,vx:Math.cos(minAngle)*hu.bSpd,vy:Math.sin(minAngle)*hu.bSpd,w:8,h:8,active:true,life:240});
+// Utolsó pályákon meredekebben lőnek (akár majdnem függőlegesen)
+const minA=curLvl>=6?-1.4:curLvl>=4?-1.0:-0.3;
+const shotAngle=Math.min(a,minA);
+bullets.push({x:hu.x+hu.w/2,y:hu.y+15,vx:Math.cos(shotAngle)*hu.bSpd,vy:Math.sin(shotAngle)*hu.bSpd,w:8,h:8,active:true,life:240});
 hu.shootT=0;hu.isAim=false;hu.shootCd=L.bulletCd[0]+Math.random()*(L.bulletCd[1]-L.bulletCd[0]);
 snd('sling');hu.vx=(.4+Math.random()*.6)*(Math.random()<.5?1:-1)}}
 if(P.inv<=0&&P.x+P.w>hu.x+5&&P.x<hu.x+hu.w-5&&P.y+P.h>hu.y+5&&P.y<hu.y+hu.h-5)playerHit()});
