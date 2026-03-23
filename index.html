@@ -315,7 +315,7 @@ const a=Math.atan2(P.y+P.h/2-hu.y-20,P.x+P.w/2-hu.x);
 // Utolsó pályákon meredekebben lőnek (akár majdnem függőlegesen)
 const minA=curLvl>=6?-1.4:curLvl>=4?-1.0:-0.3;
 const shotAngle=Math.min(a,minA);
-bullets.push({x:hu.x+hu.w/2,y:hu.y+15,vx:Math.cos(shotAngle)*hu.bSpd,vy:Math.sin(shotAngle)*hu.bSpd,w:8,h:8,active:true,life:240});
+bullets.push({x:hu.x+hu.w/2,y:hu.y+15,vx:Math.cos(shotAngle)*hu.bSpd,vy:Math.sin(shotAngle)*hu.bSpd,w:8,h:8,active:true,life:120});
 hu.shootT=0;hu.isAim=false;hu.shootCd=L.bulletCd[0]+Math.random()*(L.bulletCd[1]-L.bulletCd[0]);
 snd('sling');hu.vx=(.4+Math.random()*.6)*(Math.random()<.5?1:-1)}}
 if(P.inv<=0&&P.x+P.w>hu.x+5&&P.x<hu.x+hu.w-5&&P.y+P.h>hu.y+5&&P.y<hu.y+hu.h-5)playerHit()});
@@ -954,7 +954,7 @@ ctx.fillText(`Szotyi: ${seedsC}/${seedsT}`,CW/2,CH/2+10);
 ctx.fillText('Pontszám: '+score,CW/2,CH/2+45);
 ctx.textAlign='left';
 if(lvlCompT<=0){curLvl++;
-if(curLvl>=LEVELS.length){saveHS();gs='win'}
+if(curLvl>=LEVELS.length){saveHS();gs='win';deathT=0}
 else{genLevel(curLvl);gs='playing'}}}
 
 function drawGO(){
@@ -966,6 +966,7 @@ if(deathT>60){ctx.fillStyle='#fff';ctx.fillText(isMobile?'Érintsd meg az újrak
 ctx.textAlign='left'}
 
 function drawWin(){
+deathT++;
 ctx.fillStyle='rgba(0,40,0,0.8)';ctx.fillRect(0,0,CW,CH);
 for(let i=0;i<30;i++){ctx.fillStyle=['#FFD700','#FF6347','#00FF00','#FF69B4','#00BFFF'][i%5];
 ctx.fillRect((Math.sin(Date.now()/500+i*73)+1)/2*CW,(Date.now()/10+i*47)%CH,6,6)}
@@ -973,7 +974,7 @@ if(imgs.player?.complete)ctx.drawImage(imgs.player,CW/2-55,CH/2-180,110,170);
 ctx.fillStyle='#FFD700';ctx.font='bold 48px "Comic Sans MS"';ctx.textAlign='center';ctx.fillText('GYŐZELEM!',CW/2,CH/2+30);
 ctx.fillStyle='#fff';ctx.font='24px "Comic Sans MS"';ctx.fillText('A világ megmentve a szotyi-tolvajoktól!',CW/2,CH/2+70);
 ctx.fillStyle='#FFD700';ctx.font='22px "Comic Sans MS"';ctx.fillText('Végső pontszám: '+score,CW/2,CH/2+110);
-ctx.fillText(isMobile?'Érintsd meg az újrakezdéshez!':'Nyomj ENTER-t az újrakezdéshez!',CW/2,CH/2+145);
+if(deathT>120){ctx.fillText(isMobile?'Érintsd meg az újrakezdéshez!':'Nyomj ENTER-t az újrakezdéshez!',CW/2,CH/2+145)}
 ctx.textAlign='left'}
 
 function drawHS(){
@@ -996,7 +997,7 @@ localStorage.setItem('szencinege_hs',JSON.stringify(highScores))}
 function menuInput(){
 if(gs==='menu'){gs='playing';curLvl=0;score=0;lives=3;genLevel(0);AC.resume()}
 else if(gs==='gameOver'&&deathT>60){saveHS();gs='playing';score=0;lives=3;genLevel(curLvl)}
-else if(gs==='win'){gs='highscores'}
+else if(gs==='win'&&deathT>120){gs='highscores'}
 else if(gs==='highscores'){gs='menu';curLvl=0;score=0;lives=3;genLevel(0)}}
 
 // ===== GAME LOOP =====
